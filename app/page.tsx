@@ -50,8 +50,17 @@ export default function Home() {
   const dateLabel = useMemo(todayInPersian, []);
 
   useEffect(() => {
-    window.Telegram?.WebApp.ready();
-    window.Telegram?.WebApp.expand();
+    let attempts = 0;
+    const connectTelegram = () => {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+        return;
+      }
+      attempts += 1;
+      if (attempts < 20) window.setTimeout(connectTelegram, 100);
+    };
+    connectTelegram();
   }, []);
 
   useEffect(() => {
