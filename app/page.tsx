@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpLeft, Check, Clipboard, Clock3, FileText, LoaderCircle, Send, Sparkles, WalletCards } from "lucide-react";
+import { ArrowUpLeft, Check, Clipboard, Clock3, FileText, LoaderCircle, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 declare global {
   interface Window {
-    Telegram?: { WebApp: { initData: string; ready: () => void; expand: () => void; openTelegramLink?: (url: string) => void; openInvoice?: (url: string, callback?: (status: "paid" | "cancelled" | "failed" | "pending") => void) => void } };
+    Telegram?: { WebApp: { initData: string; ready: () => void; expand: () => void; openTelegramLink?: (url: string) => void } };
   }
   interface Document {
     modelContext?: {
@@ -47,6 +47,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [mode, setMode] = useState<"ai" | "preview" | null>(null);
+  const [accessExpired, setAccessExpired] = useState(false);
   const dateLabel = useMemo(todayInPersian, []);
 
   useEffect(() => {
@@ -110,13 +111,15 @@ export default function Home() {
     }
     setIsLoading(true);
     setCopied(false);
+    setAccessExpired(false);
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawText: text, tone, dateLabel, initData: window.Telegram?.WebApp.initData ?? "" }),
       });
-      const data = (await response.json()) as { report?: string; mode?: "ai" | "preview"; error?: string };
+      const data = (await response.json()) as { report?: string; mode?: "ai" | "preview"; error?: string; accessExpired?: boolean };
+      if (data.accessExpired) setAccessExpired(true);
       if (!response.ok || !data.report) throw new Error(data.error || "ساخت گزارش انجام نشد.");
       setReport(data.report);
       setMode(data.mode ?? null);
@@ -149,13 +152,10 @@ export default function Home() {
             <div className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-[0_10px_28px_rgba(31,42,68,.2)]"><FileText className="size-5" aria-hidden="true" /></div>
             <div><h1 className="text-lg font-extrabold tracking-tight">روزنگار</h1><p className="text-sm text-muted-foreground">گزارش امروز، مرتب و آماده</p></div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-2 rounded-full border border-border/70 bg-card/75 px-3 py-2 text-sm text-muted-foreground shadow-sm backdrop-blur sm:flex"><Clock3 className="size-4 text-accent-foreground" />{dateLabel}</div>
-            <Button asChild variant="outline" className="h-11 rounded-2xl bg-card/80 px-3 font-bold shadow-sm">
-              <a href="/pay"><WalletCards className="size-4" /><span className="hidden sm:inline">کیف پول</span></a>
-            </Button>
-          </div>
+          <div className="hidden items-center gap-2 rounded-full border border-border/70 bg-card/75 px-3 py-2 text-sm text-muted-foreground shadow-sm backdrop-blur sm:flex"><Clock3 className="size-4 text-accent-foreground" />{dateLabel}</div>
         </header>
+
+        {accessExpired && <div className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold leading-6 text-amber-950">دوره دسترسی تمام شده است. برای شارژ کیف پول و خرید اشتراک، در ربات دستور <span dir="ltr">/pay</span> را بزنید.</div>}
 
         <div className="grid flex-1 items-start gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)]">
           <section className="rounded-[2rem] border border-border/80 bg-card/90 p-4 shadow-[0_24px_70px_rgba(28,37,65,.08)] backdrop-blur sm:p-6">

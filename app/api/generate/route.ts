@@ -1,27 +1,10 @@
 import { env } from "cloudflare:workers";
+import { getD1 } from "@/db";
+import { authenticateTelegram } from "@/lib/telegram-auth";
 
 type RuntimeEnv = { HF_TOKEN?: string; HF_MODEL?: string; TELEGRAM_BOT_TOKEN?: string };
 const TONE_RULES = { formal: "رسمی، حرفه‌ای و روشن", compact: "بسیار کوتاه، بدون کلمات اضافه", result: "نتیجه‌محور با تأکید بر خروجی واقعی کار" } as const;
-
-function toHex(bytes: ArrayBuffer) { return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, "0")).join(""); }
-async function hmac(key: ArrayBuffer | Uint8Array, value: string) {
-  const cryptoKey = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  return crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(value));
-}
-async function validateTelegramData(initData: string, botToken: string) {
-  const params = new URLSearchParams(initData);
-  const receivedHash = params.get("hash");
-  if (!receivedHash || !/^[a-f0-9]{64}$/i.test(receivedHash)) return false;
-  params.delete("hash"); params.delete("signature");
-  const dataCheckString = [...params.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => `${key}=${value}`).join("\n");
-  const secret = await hmac(new TextEncoder().encode("WebAppData"), botToken);
-  const calculatedHash = toHex(await hmac(secret, dataCheckString));
-  let difference = 0;
-  for (let index = 0; index < calculatedHash.length; index += 1) difference |= calculatedHash.charCodeAt(index) ^ receivedHash.charCodeAt(index);
-  const authDate = Number(params.get("auth_date"));
-  const age = Math.floor(Date.now() / 1000) - authDate;
-  return difference === 0 && authDate > 0 && age >= 0 && age <= 3600;
-}
+const TRIAL_SECONDS = 5 * 24 * 60 * 60;
 
 function previewReport(rawText: string, dateLabel: string) {
   const durationPattern = /((?:حدود\s*)?(?:نیم|یک|دو|سه|چهار|پنج|شش|هفت|هشت|نه|ده|\d+)\s*(?:ساعت|دقیقه))/i;
@@ -52,10 +35,41 @@ export async function POST(request: Request) {
     const runtime = env as unknown as RuntimeEnv;
     const botToken = runtime.TELEGRAM_BOT_TOKEN;
     const hfToken = runtime.HF_TOKEN;
-    if (!botToken || !hfToken) return Response.json({ report: previewReport(rawText, dateLabel), mode: "preview" });
+    if (!botToken) return Response.json({ report: previewReport(rawText, dateLabel), mode: "preview" });
 
     const initData = typeof body.initData === "string" ? body.initData : "";
-    if (!(await validateTelegramData(initData, botToken))) return Response.json({ error: "ورود تلگرام معتبر نیست. برنامه را از داخل ربات باز کنید." }, { status: 401 });
+    const user = await authenticateTelegram(initData, botToken);
+    if (!user) return Response.json({ error: "ورود تلگرام معتبر نیست. برنامه را از داخل ربات باز کنید." }, { status: 401 });
+
+    const db = getD1();
+    const now = Math.floor(Date.now() / 1000);
+    await db
+      .prepare(
+        `INSERT INTO telegram_users
+          (telegram_user_id, first_name, username, trial_started_at, trial_ends_at,
+           subscription_ends_at, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, 0, ?, ?)
+         ON CONFLICT(telegram_user_id) DO UPDATE SET
+           first_name = excluded.first_name,
+           username = excluded.username,
+           trial_started_at = CASE WHEN telegram_users.trial_started_at = 0 THEN excluded.trial_started_at ELSE telegram_users.trial_started_at END,
+           trial_ends_at = CASE WHEN telegram_users.trial_ends_at = 0 THEN excluded.trial_ends_at ELSE telegram_users.trial_ends_at END,
+           updated_at = excluded.updated_at`,
+      )
+      .bind(String(user.id), user.first_name, user.username || null, now, now + TRIAL_SECONDS, now, now)
+      .run();
+    const account = await db
+      .prepare("SELECT trial_ends_at AS trialEndsAt, subscription_ends_at AS subscriptionEndsAt FROM telegram_users WHERE telegram_user_id = ?")
+      .bind(String(user.id))
+      .first<{ trialEndsAt: number; subscriptionEndsAt: number }>();
+    if (!account || (account.trialEndsAt <= now && account.subscriptionEndsAt <= now)) {
+      return Response.json(
+        { error: "دوره دسترسی شما پایان یافته است. برای شارژ و خرید اشتراک، در ربات دستور /pay را بزنید.", accessExpired: true },
+        { status: 402 },
+      );
+    }
+
+    if (!hfToken) return Response.json({ report: previewReport(rawText, dateLabel), mode: "preview" });
 
     const prompt = `شما ویراستار گزارش کار روزانه فارسی هستید.
 
