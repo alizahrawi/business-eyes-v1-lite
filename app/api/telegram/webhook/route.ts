@@ -149,7 +149,7 @@ async function sendWallet(botToken: string, runtime: RuntimeEnv, chatId: number,
   const plansReady = positiveInteger(runtime.MONTHLY_PRICE_CREDITS) || positiveInteger(runtime.QUARTERLY_PRICE_CREDITS);
   await telegramApi(botToken, "sendMessage", {
     chat_id: chatId,
-    text: `⭐ کیف پول روزنگار\n\nموجودی: ${formatNumber(Number(account.balance))} اعتبار\nوضعیت: ${accessText(account)}\n\nبرای شارژ، تعداد استار را انتخاب کنید.${plansReady ? "\nپس از شارژ می‌توانید پلن را از همین‌جا بخرید." : ""}`,
+    text: `⭐ کیف پول Business Eyes\n\nموجودی: ${formatNumber(Number(account.balance))} اعتبار\nوضعیت: ${accessText(account)}\n\nبرای شارژ، تعداد استار را انتخاب کنید.${plansReady ? "\nپس از شارژ می‌توانید پلن را از همین‌جا بخرید." : ""}`,
     reply_markup: walletKeyboard(runtime),
   });
 }
@@ -169,12 +169,12 @@ async function sendTopUpInvoice(botToken: string, chatId: number, userId: number
     .run();
   await telegramApi(botToken, "sendInvoice", {
     chat_id: chatId,
-    title: "شارژ کیف پول روزنگار",
+    title: "شارژ کیف پول Business Eyes",
     description: `افزایش موجودی به اندازه ${formatNumber(amount)} اعتبار`,
     payload,
     provider_token: "",
     currency: "XTR",
-    prices: [{ label: "اعتبار روزنگار", amount }],
+    prices: [{ label: "اعتبار Business Eyes", amount }],
   });
 }
 
@@ -229,7 +229,7 @@ async function buyPlan(botToken: string, runtime: RuntimeEnv, chatId: number, us
   await telegramApi(botToken, "sendMessage", {
     chat_id: chatId,
     text: `✅ پلن ${plan === "monthly" ? "یک‌ماهه" : "سه‌ماهه"} فعال شد.\nدسترسی تا ${formatDate(account.subscriptionEndsAt)}\nموجودی: ${formatNumber(Number(account.balance))} اعتبار`,
-    reply_markup: { inline_keyboard: [[{ text: "✍️ ورود به روزنگار", web_app: { url: runtime.APP_URL || "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site" } }]] },
+    reply_markup: { inline_keyboard: [[{ text: "✍️ ورود به Business Eyes", web_app: { url: runtime.APP_URL || "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site" } }]] },
   });
 }
 
@@ -337,7 +337,7 @@ export async function POST(request: Request) {
         chat_id: message.chat.id,
         text: `سلام ${sender.first_name || ""} 👋\n${accessText(account)}\n\nکارهای امروزت را بنویس و یک گزارش کوتاه و آماده تحویل بگیر.`,
         reply_markup: active
-          ? { inline_keyboard: [[{ text: "✍️ ورود به روزنگار", web_app: { url: runtime.APP_URL || "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site" } }], [{ text: "⭐ کیف پول و اشتراک", callback_data: "wallet:show" }]] }
+          ? { inline_keyboard: [[{ text: "✍️ ورود به Business Eyes", web_app: { url: runtime.APP_URL || "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site" } }], [{ text: "⭐ کیف پول و اشتراک", callback_data: "wallet:show" }]] }
           : { inline_keyboard: [[{ text: "⭐ شارژ کیف پول و تمدید", callback_data: "wallet:show" }]] },
       });
       return Response.json({ ok: true });
@@ -351,7 +351,7 @@ export async function POST(request: Request) {
       return Response.json({ ok: true });
     }
     if (command === "/terms") {
-      await telegramApi(botToken, "sendMessage", { chat_id: message.chat.id, text: "اعتبار کیف پول فقط برای خدمات روزنگار قابل استفاده است. خرید اشتراک یک‌باره است و تمدید خودکار ندارد. پرداخت‌ها با Telegram Stars انجام می‌شوند." });
+      await telegramApi(botToken, "sendMessage", { chat_id: message.chat.id, text: "اعتبار کیف پول فقط برای خدمات Business Eyes قابل استفاده است. خرید اشتراک یک‌باره است و تمدید خودکار ندارد. پرداخت‌ها با Telegram Stars انجام می‌شوند." });
       return Response.json({ ok: true });
     }
 
