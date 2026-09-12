@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#f4f7ff" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="fa" dir="rtl"><body className="antialiased"><Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />{children}</body></html>;
+  return <html lang="fa" dir="rtl"><body className="antialiased"><Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" />{children}</body></html>;
 }
