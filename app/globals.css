@@ -3,11 +3,12 @@
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 
 :root {
-  --background: #f4f7ff; --foreground: #17203a; --card: #ffffff; --card-foreground: #17203a;
-  --popover: #ffffff; --popover-foreground: #17203a; --primary: #1f2a44; --primary-foreground: #ffffff;
-  --secondary: #e7f8fa; --secondary-foreground: #117780; --muted: #eef2fa; --muted-foreground: #68718a;
-  --accent: #22b8c5; --accent-foreground: #073f45; --destructive: #d93652; --border: #dfe5f0;
-  --input: #dfe5f0; --ring: #22aeb9; --radius: 1rem;
+  color-scheme: dark;
+  --background: #080a09; --foreground: #f3f6f4; --card: #111412; --card-foreground: #f3f6f4;
+  --popover: #111412; --popover-foreground: #f3f6f4; --primary: #61e69c; --primary-foreground: #07120b;
+  --secondary: #18231d; --secondary-foreground: #8bf1b8; --muted: #171a18; --muted-foreground: #858b87;
+  --accent: #61e69c; --accent-foreground: #07120b; --destructive: #ff6175; --border: #292d2a;
+  --input: #292d2a; --ring: #61e69c; --radius: 1rem;
 }
 @theme inline {
   --color-background: var(--background); --color-foreground: var(--foreground); --color-card: var(--card);
@@ -20,8 +21,9 @@
   --font-sans: Tahoma, "Segoe UI", Arial, sans-serif;
 }
 * { border-color: var(--border); }
+html { scroll-behavior: smooth; }
 html, body { background: var(--background); }
 body { margin: 0; color: var(--foreground); font-family: Tahoma, "Segoe UI", Arial, sans-serif; }
 button, textarea { font: inherit; }
-::selection { background: #bceef2; color: #17203a; }
+::selection { background: #61e69c; color: #07120b; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
