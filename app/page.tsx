@@ -6,7 +6,6 @@ import {
   Check,
   Clipboard,
   Clock3,
-  Eye,
   FileCheck2,
   ListTodo,
   LoaderCircle,
@@ -213,7 +212,9 @@ export default function Home() {
       <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 pb-36 pt-4 sm:px-7 sm:pt-7 lg:px-10">
         <header className="mb-9 flex items-center justify-between rounded-[1.8rem] border border-border bg-card/90 px-4 py-3 shadow-[0_18px_55px_rgba(0,0,0,.35)] sm:px-5">
           <div className="flex min-w-0 items-center gap-3" dir="ltr">
-            <div className="grid size-12 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#b9ffdb,#3dbb79)] text-[#07120b] shadow-[0_0_28px_rgba(91,224,148,.2)]"><Eye className="size-6" aria-hidden="true" /></div>
+            <div className="size-12 shrink-0 overflow-hidden rounded-full border border-[#6f4528] bg-black shadow-[0_0_28px_rgba(174,93,35,.22)]">
+              <img src="/business-eye-logo.jpg" alt="لوگوی Business Eyes" className="size-full object-cover" />
+            </div>
             <div className="min-w-0 text-left"><h1 className="truncate text-base font-black tracking-tight text-white sm:text-lg">Business Eyes</h1><p className="mt-0.5 text-[.7rem] font-bold uppercase tracking-[.18em] text-muted-foreground">V1 Lite</p></div>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-border bg-[#0b0d0c] px-3 py-2 text-xs text-muted-foreground sm:text-sm"><Clock3 className="size-4 text-accent" /><span className="hidden sm:inline">{dateLabel}</span><span className="sm:hidden">امروز</span></div>
