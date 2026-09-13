@@ -1,6 +1,7 @@
 {
-  "name": "site-creator-vinext-starter",
-  "version": "0.1.0",
+  "name": "business-eyes-v1-lite",
+  "version": "1.0.0",
+  "description": "AI-powered Telegram Mini App for structured Persian daily work reports.",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
