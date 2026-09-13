@@ -1,126 +1,270 @@
-# vinext-starter
+# Business Eyes v1 Lite
 
-A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
+> An AI-powered Telegram Mini App that turns informal Persian daily activities into concise, structured, manager-ready work reports.
 
-## Prerequisites
+[![Telegram Mini App](https://img.shields.io/badge/Telegram-Mini%20App-229ED9?logo=telegram&logoColor=white)](https://core.telegram.org/bots/webapps)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Serverless-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-AI-FFD21E)](https://huggingface.co/)
+[![Status](https://img.shields.io/badge/version-v1%20Lite-76d5aa)](#project-status)
 
-- Node.js `>=22.13.0`
-- Portable: Windows, macOS, or Linux; no Bash required
-- Managed Linux: managed Linux runtime with Bash, `flock`, `curl`, `sha256sum`, and GNU `timeout`
-- Git is required only for publishing
+**Live Mini App:** [Business Eyes v1 Lite](https://rooznegar-daily-report.zahrawi-biz.chatgpt.site/)
 
-## Sites Lifecycle
+## Why I built Business Eyes
 
-The Sites initializer copies the shared starter and selects managed-linux only when `SITES_MANAGED_LINUX_CONTAINER=1`; otherwise it selects portable. It saves the selection only in ignored `.sites-runtime/execution-profile.json`. Both profiles copy/configure first, then use the plugin's separate `install-dependencies.mjs` step to measure installation independently. Edit source under `app/` and follow the Sites skill for installation, preview, builds, and publishing.
+A few years ago, my journey into structured task management began with [ClickUp](https://clickup.com/).
 
-Whenever reopening or moving a checkout, run `node <plugin-root>/scripts/configure-execution-profile.mjs` before project commands. Profile changes do not alter tracked source or require reinstalling otherwise-valid dependencies; restart an existing preview to use the new selection. Do not commit or upload `.sites-runtime/`.
+At the time, I was constantly looking for ways to make my reports more useful for senior management—not simply a list of completed tasks, but a clear source of insight for better decision-making.
 
-This starter does not use `wrangler.jsonc`.
+With the help of AI, I started improving my reports by including:
 
-`install:ci` runs `npm ci` once against the shared lockfile, disables parent-workspace discovery, and includes required dev/optional dependencies despite production/omit settings. Sharp defaults to prebuilt binaries unless explicitly configured otherwise. Do not overlap installers.
+- Weekly performance analysis
+- Forecasts for the upcoming week
+- Clear visual hierarchy and highlighted insights
+- Structured and measurable task descriptions
+- Radar charts for faster performance analysis
 
-- **Portable:** Preserve host HOME, npm cache, registry, proxy, temporary paths, retry/concurrency settings, and lifecycle-script policy. Use `--prefer-offline --no-audit --no-fund`.
-- **Managed Linux:** Use the existing project-local HOME/cache/tmp setup and Linux install lock, tarball preflight, and timeout. Restore the image-seeded npm cache only when its lockfile hash matches; retain network fallback. Builds keep their existing timeout. These helpers are not invoked by the portable profile.
+This approach helped me communicate my work more effectively, earn greater trust within the organization, and eventually take responsibility for onboarding team members, designing task-management workflows, and analyzing team performance.
 
-`scripts/sites-env.mjs` preserves the caller's HOME, npm cache, proxy, XDG, and temporary-directory configuration while defaulting Wrangler and Miniflare state to the checkout. If npm reports an unwritable cache, select a writable path with `npm_config_cache` for that install. The `dev` and `start` scripts also keep Wrangler logs inside the checkout. Generated `.sites-runtime/` and `.wrangler/` directories are disposable and ignored by Git.
+Over time, this became one of my core professional skills.
 
-On portable, `npm run dev` uses `vinext dev` with HMR, starting at port 5173. Vinext records the running server in ignored `.vinext/` state, rejects an ordinary duplicate launch, and recovers stale state after a stopped process; exactly simultaneous starts can race. Pass `--port <port>` or `--hostname <host>` after `npm run dev --` when needed; keep portable previews on loopback.
+I later implemented and customized task-management systems for different teams and projects, helping businesses move from traditional workflows toward more structured, measurable, and efficient operations.
 
-On managed Linux, use `sites-preview start` only for requested browser QA. The project's dev script runs Vite and accepts the supervisor's `--host 0.0.0.0 --port 4173 --strictPort` arguments. The internal browser uses `http://terminal.local:4173/`; it is not a user-facing URL. The supervisor owns the preview lifecycle. The ignored local profile survives the supervisor's cleared process environment.
+However, I repeatedly encountered the same challenges:
 
-The portable profile simulates ChatGPT sign-in only for loopback development requests. Visit `/signin-with-chatgpt?return_to=/` to sign in as `local_seedy` (`seedy@sites.test`, display name `Seedy`) and `/signout-with-chatgpt?return_to=/` to sign out. The development cookie preserves that identity across server restarts. Mock auth is disabled in the managed-linux profile and is not included in production builds; hosted authentication remains dispatch-owned.
+- Team members completed only the general task-description field.
+- Time spent on activities was not recorded accurately.
+- Task titles were inconsistent or unclear.
+- Important activities were often forgotten.
+- Reports lacked the structure managers needed for analysis.
 
-The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
+I began teaching team members how to use prompt engineering to turn their daily activities into clear and professional reports. But one question stayed with me:
 
-Local previews use Miniflare's placeholder `Request.cf` metadata without a network lookup. Set `CLOUDFLARE_CF_FETCH_ENABLED=true` to opt into fetching preview metadata; this setting does not change hosted request metadata.
+> What if people could create high-quality reports without having to learn prompt engineering?
 
-Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=true` to opt in.
+That question became the starting point for **Business Eyes**.
 
-## Included Shape
+**Business Eyes v1 Lite** allows users to describe their daily activities naturally—in Persian—and automatically transforms them into concise, structured, and manager-ready work reports.
 
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `@cloudflare/workers-types` provides Worker types; `cloudflare-env.d.ts` declares optional `DB`/`BUCKET` bindings—update these declarations if binding names change
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+This is only the first step. I am passionate about helping businesses transition from traditional processes to modern, intelligent, and measurable systems. Business Eyes is the beginning of that journey as a product.
 
-## Workspace Auth Headers
+Being recognized as a **Verified ClickUp Power User**, ranked among the top 10% of ClickUp users globally by platform usage, makes this milestone even more meaningful to me. Thank you, ClickUp, for being an important part of this journey.
 
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
+Feedback, experiences, and ideas are welcome as I continue developing future versions of Business Eyes.
 
-The user ID is stable for the same user on the same Site and different across Sites. Use it as the durable user key; use email and name for display or contact purposes.
+## The problem
 
-SIWC-authenticated workspace sites may also receive `oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty `name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by `oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
+Daily reports are often incomplete, inconsistent, and difficult for managers to evaluate. Employees may forget activities, omit the time spent, use unclear titles, or write long descriptions that do not communicate outcomes.
 
-Treat the full name as optional and fall back to email when it is absent:
+Business Eyes reduces that friction by letting users write naturally while the system applies a consistent reporting framework.
 
-```tsx
-import { headers } from "next/headers";
+## What the product does
 
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
+1. The user opens the Telegram bot and receives a five-day free trial.
+2. The bot validates access and opens the Telegram Mini App.
+3. The user writes daily activities in natural Persian.
+4. The user selects a report style: formal, concise, or result-oriented.
+5. The backend validates Telegram identity and subscription access.
+6. A Hugging Face model converts the input into a structured report.
+7. If the AI service is unavailable, a deterministic fallback creates a preview report.
+8. The user reviews, edits, copies, or shares the final report.
+9. After the trial expires, wallet top-up and subscription activation are completed through the Telegram bot using Telegram Stars.
 
-  const displayName = fullName ?? email;
-  // ...
-}
+## Product workflow
+
+![Business Eyes v1 Lite BPMN-like workflow](docs/architecture/business-eyes-workflow.png)
+
+The editable workflow sources are available in [`docs/architecture`](docs/architecture/README.md).
+
+## Main features
+
+- Persian-first daily activity input
+- Formal, concise, and result-oriented report styles
+- Manager-ready output with task title and recorded duration
+- Secure Telegram Mini App authentication using signed `initData`
+- Five-day automatic free trial
+- 30-day and 90-day subscription plans
+- Internal wallet funded through Telegram Stars
+- Preset and custom wallet top-up amounts
+- Atomic wallet transactions and subscription activation
+- Dynamic Telegram name and profile image in the interface
+- Hugging Face model integration
+- Rule-based preview and fallback mode
+- Cloudflare D1 persistence
+- Serverless deployment architecture
+
+## Architecture
+
+```text
+Telegram User
+   │
+   ├── Telegram Bot
+   │      ├── Registration and access status
+   │      ├── Five-day trial
+   │      ├── Wallet and Telegram Stars invoices
+   │      └── Subscription activation
+   │
+   └── Telegram Mini App
+          ├── Persian activity input
+          ├── Report-style selection
+          └── Copy and share output
+                 │
+                 ▼
+        Serverless API Routes
+          ├── Telegram initData validation
+          ├── Access-control enforcement
+          ├── Hugging Face inference
+          └── Rule-based fallback
+                 │
+                 ▼
+            Cloudflare D1
+          ├── Telegram users
+          ├── Wallet transactions
+          └── Temporary bot sessions
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## Technology stack
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs optional or required ChatGPT sign-in:
+| Layer | Technology |
+| --- | --- |
+| User interface | React 19, Next.js 16, Tailwind CSS |
+| Telegram integration | Telegram Bot API and Telegram Mini Apps |
+| AI inference | Hugging Face Inference Router |
+| Backend | Serverless route handlers on Cloudflare Workers |
+| Database | Cloudflare D1 with Drizzle ORM |
+| Runtime and build | Vinext, Vite, TypeScript |
+| Payments | Telegram Stars (`XTR`) and internal wallet credits |
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use the returned `userId` as the stable user key for user-owned records; do not use email as a durable identifier.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send anonymous visitors through Sign in with ChatGPT.
-- In a Server Component, start sign-in with `<a href={chatGPTSignInPath(returnTo)} target="_top">`. The auth helper module is server-only; do not import it into a Client Component.
-- Do not use `fetch`, XHR, a client-side router, or a framework link that can prefetch the sign-in route. SIWC must start as a top-level navigation.
-- Never request the AuthAPI authorization endpoint directly. The dispatch-owned `/signin-with-chatgpt` route must start the SIWC flow.
-- Use `chatGPTSignOutPath(returnTo)` for browser sign-out links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because they depend on per-request identity headers.
+## Project structure
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the OAuth cookies, and identity header injection. Do not implement app routes for those reserved paths. Routes that do not import and call the helper remain anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the Sites hosting platform's access policy controls for workspace-wide restrictions, or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Local D1 migrations
-
-For a D1-backed local preview, generate SQL with `npm run db:generate`. Build once through the Sites skill's build entrypoint (or `npm run build` for standalone use) to generate `dist/server/wrangler.json`, rebuilding if bindings change. From the project root, apply each pending migration in order:
-
-```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_example.sql
+```text
+business-eyes-v1-lite/
+├── app/
+│   ├── api/
+│   │   ├── generate/
+│   │   │   └── route.ts              # Authentication, access check and AI report generation
+│   │   └── telegram/
+│   │       └── webhook/
+│   │           └── route.ts          # Bot commands, Stars payments, wallet and subscriptions
+│   ├── globals.css                   # Business Eyes visual design system
+│   ├── layout.tsx                    # Application metadata and Telegram Web App script
+│   └── page.tsx                      # Persian report-builder interface
+├── components/
+│   └── ui/                           # Reusable interface components
+├── db/
+│   ├── index.ts                      # Cloudflare D1 connection helpers
+│   └── schema.ts                     # Users, bot sessions and wallet transaction models
+├── docs/
+│   └── architecture/
+│       ├── README.md                 # Workflow documentation and usage
+│       ├── business-eyes-workflow.mmd
+│       ├── business-eyes-workflow.png
+│       └── business-eyes-workflow.svg
+├── drizzle/                          # Versioned D1 migrations
+├── lib/
+│   ├── telegram-api.ts               # Typed Telegram Bot API client
+│   ├── telegram-auth.ts              # Telegram initData HMAC verification
+│   └── utils.ts                      # Shared utilities
+├── public/                            # Brand and static assets
+├── scripts/                           # Portable build and deployment helpers
+├── .env.example                       # Required runtime configuration
+├── package.json
+└── README.md
 ```
 
-Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
+## Getting started
 
-## Diagnostic Commands
+### Prerequisites
 
-- `npm run install:ci`: perform the one locked dependency install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: preview the built Worker locally with D1/R2 support
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+- Node.js 22.13 or newer
+- A Telegram bot created through BotFather
+- A Cloudflare D1 database
+- A Hugging Face access token for AI mode
 
-When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
+### Installation
 
-The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.
+```bash
+git clone <your-repository-url>
+cd business-eyes-v1-lite
+npm ci
+```
 
-## Learn More
+Create your local environment file from `.env.example` and configure the values below:
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+```env
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_WEBHOOK_SECRET=
+APP_URL=https://your-app.example.com
+MONTHLY_PRICE_CREDITS=
+QUARTERLY_PRICE_CREDITS=
+HF_TOKEN=
+HF_MODEL=Qwen/Qwen2.5-7B-Instruct-1M:fastest
+```
+
+Never commit bot tokens, webhook secrets, or Hugging Face tokens.
+
+### Development
+
+```bash
+npm run dev
+```
+
+### Quality checks
+
+```bash
+npm run lint
+npm run build
+```
+
+### Database migrations
+
+Generate a migration after changing `db/schema.ts`:
+
+```bash
+npm run db:generate
+```
+
+Apply the versioned SQL migrations to the configured D1 database before enabling the production webhook.
+
+## Telegram bot commands
+
+| Command | Purpose |
+| --- | --- |
+| `/start` | Register the user, display access status, and open the Mini App |
+| `/pay` | Open wallet top-up and subscription options |
+| `/balance` | Display wallet balance |
+| `/status` | Display access and wallet status |
+| `/paysupport` | Show payment-support guidance |
+| `/terms` | Display wallet and subscription terms |
+
+## Wallet and subscription rules
+
+- The free trial lasts five days from the first Telegram interaction.
+- Trial expiration is enforced whenever access is checked; no background scheduler is required.
+- One successfully paid Telegram Star currently credits one internal wallet unit.
+- Preset top-ups are 50, 100, 250, and 500 Stars.
+- Custom top-ups accept between 10 and 2,500 Stars.
+- Custom-amount input sessions expire after ten minutes.
+- Subscription purchases debit the internal wallet atomically.
+- A new subscription extends from the later of the current expiration date or the purchase time.
+- Purchases are one-time and do not renew automatically.
+- Plan prices are configured using `MONTHLY_PRICE_CREDITS` and `QUARTERLY_PRICE_CREDITS`.
+
+## Security
+
+- Telegram Mini App `initData` is verified using HMAC-SHA256.
+- Authentication payloads older than one hour are rejected.
+- Telegram webhook requests require a secret-token header.
+- Pre-checkout requests are matched against pending wallet transactions.
+- Completed payments are processed idempotently.
+- Secrets remain in runtime environment variables and are not stored in the repository.
+- AI output is instructed not to invent time, results, names, numbers, or missing details.
+
+## Project status
+
+This repository contains **Business Eyes v1 Lite**, the first product version. The current scope focuses on Persian daily-report generation, Telegram identity, access control, wallet top-up, and subscription activation.
+
+Potential future versions may add team dashboards, manager analytics, recurring reporting, task-manager integrations, and performance visualizations.
+
+## Acknowledgements
+
+Business Eyes grew from years of practical experience designing task-management workflows and helping teams improve reporting quality. [ClickUp](https://clickup.com/) was an important part of that professional journey and the first task-management platform that inspired this direction.

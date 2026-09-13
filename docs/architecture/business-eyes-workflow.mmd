@@ -1,0 +1,93 @@
+flowchart TB
+
+    subgraph USER["Lane 1 — Telegram User"]
+        direction LR
+        START((Start))
+        U1["Send /start"]
+        U2["Open the Mini App"]
+        U3["Enter daily activities"]
+        U4["Select report style<br/>Formal, Concise, or Result-oriented"]
+        U5["Review and edit report"]
+        U6["Copy or share report"]
+        FINISH((End))
+        P1["Send /pay"]
+        P2["Select wallet top-up amount"]
+        P3["Pay with Telegram Stars"]
+        P4["Select a subscription<br/>30 or 90 days"]
+    end
+
+    subgraph BOT["Lane 2 — Telegram Bot"]
+        direction LR
+        B1["Register Telegram user"]
+        B2["Send Open Mini App button"]
+        B3["Display access status"]
+        B4["Display wallet and top-up options"]
+        B5["Create Telegram Stars invoice"]
+        B6["Validate pre-checkout request"]
+        B7["Display updated wallet balance"]
+        B8["Confirm subscription activation"]
+        B9["Payment failed<br/>Retry or cancel"]
+    end
+
+    subgraph APP["Lane 3 — Business Eyes Mini App"]
+        direction LR
+        A1["Receive Telegram initData"]
+        A2["Display daily report form"]
+        A3["Submit data for report generation"]
+        A4["Display structured report"]
+        A5["Authentication error<br/>Reopen through the bot"]
+    end
+
+    subgraph BACKEND["Lane 4 — Serverless Backend"]
+        direction LR
+        BE1["Create account and start<br/>5-day free trial"]
+        G1{"Is access active?"}
+        BE2["Validate Telegram initData"]
+        G2{"Is the identity valid?"}
+        BE3["Check trial and subscription"]
+        G3{"Is the trial or subscription active?"}
+        BE4["Prepare the Persian AI prompt"]
+        G4{"Is the AI model available?"}
+        BE5["Standardize the output<br/>Title, time, action, and result"]
+        BE6["Generate rule-based fallback report"]
+        BE7["Complete transaction<br/>and credit the wallet"]
+        G5{"Was the payment successful?"}
+        G6{"Is the wallet balance sufficient?"}
+        BE8["Debit wallet balance"]
+        BE9["Activate or extend subscription"]
+    end
+
+    subgraph SERVICES["Data Stores and External Services"]
+        direction LR
+        DB[("Cloudflare D1<br/>Users · Wallet · Transactions · Sessions")]
+        STARS[["Telegram Stars"]]
+        HF[["Hugging Face Model"]]
+    end
+
+    START --> U1 --> B1 --> BE1
+    BE1 --> DB
+    BE1 --> G1
+    G1 -- "Yes" --> B2 --> U2
+    G1 -- "No — trial or subscription expired" --> B3 --> P1
+
+    U2 --> A1 --> BE2 --> G2
+    G2 -- "Invalid" --> A5 --> U1
+    G2 -- "Valid" --> BE3
+    BE3 --> DB
+    BE3 --> G3
+    G3 -- "No" --> B3
+    G3 -- "Yes" --> A2 --> U3 --> U4 --> A3 --> BE4 --> G4
+
+    G4 -- "Yes" --> HF --> BE5
+    G4 -- "No — fallback mode" --> BE6 --> BE5
+    BE5 --> A4 --> U5 --> U6 --> FINISH
+
+    P1 --> B4 --> P2 --> B5 --> STARS --> P3 --> B6 --> G5
+    G5 -- "No" --> B9 --> P2
+    G5 -- "Yes" --> BE7
+    BE7 --> DB
+    BE7 --> B7 --> P4 --> G6
+    G6 -- "No" --> B4
+    G6 -- "Yes" --> BE8 --> BE9
+    BE9 --> DB
+    BE9 --> B8 --> B2

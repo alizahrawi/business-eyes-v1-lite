@@ -1,0 +1,263 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3600" height="2220" viewBox="0 0 3600 2220" role="img" aria-labelledby="title desc">
+  <title id="title">Business Eyes v1 Lite BPMN-like workflow</title>
+  <desc id="desc">Swimlane workflow showing onboarding, access control, AI report generation, Telegram Stars wallet top-up, and subscription activation.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.34"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#78d9ad"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#91a399"/>
+    </marker>
+    <style>
+      .bg { fill:#070b09; }
+      .panel { fill:#0d1310; stroke:#29362f; stroke-width:2; }
+      .lane-a { fill:#111915; }
+      .lane-b { fill:#0e1612; }
+      .lane-line { stroke:#26352d; stroke-width:2; }
+      .title { fill:#f3f8f5; font:600 54px "Segoe UI",Arial,sans-serif; }
+      .subtitle { fill:#91a399; font:400 24px "Segoe UI",Arial,sans-serif; }
+      .section-title { fill:#78d9ad; font:600 30px "Segoe UI",Arial,sans-serif; letter-spacing:1px; }
+      .lane-label { fill:#b8c8c0; font:600 22px "Segoe UI",Arial,sans-serif; letter-spacing:.5px; }
+      .task { fill:#1b2520; stroke:#436354; stroke-width:2; filter:url(#shadow); }
+      .task-ai { fill:#18241f; stroke:#78d9ad; stroke-width:3; filter:url(#shadow); }
+      .task-pay { fill:#1d2420; stroke:#d7b866; stroke-width:2; filter:url(#shadow); }
+      .task-text { fill:#f2f7f4; font:500 22px "Segoe UI",Arial,sans-serif; text-anchor:middle; }
+      .small { fill:#aabbb2; font:400 18px "Segoe UI",Arial,sans-serif; text-anchor:middle; }
+      .flow { fill:none; stroke:#78d9ad; stroke-width:4; marker-end:url(#arrow); }
+      .flow-muted { fill:none; stroke:#91a399; stroke-width:3; stroke-dasharray:10 9; marker-end:url(#arrow-muted); }
+      .flow-label { fill:#b9c9c1; font:500 18px "Segoe UI",Arial,sans-serif; }
+      .flow-no { fill:#f0b7a9; font:500 18px "Segoe UI",Arial,sans-serif; }
+      .gateway { fill:#2a2416; stroke:#d7b866; stroke-width:3; filter:url(#shadow); }
+      .gateway-text { fill:#fff5d8; font:600 19px "Segoe UI",Arial,sans-serif; text-anchor:middle; }
+      .event { fill:#0d1310; stroke:#78d9ad; stroke-width:5; }
+      .end-event { fill:#78d9ad; stroke:#baf0d6; stroke-width:5; }
+      .event-text { fill:#dce9e2; font:500 17px "Segoe UI",Arial,sans-serif; text-anchor:middle; }
+      .service { fill:#171d27; stroke:#7b94d4; stroke-width:2; filter:url(#shadow); }
+      .service-text { fill:#e7edff; font:500 21px "Segoe UI",Arial,sans-serif; text-anchor:middle; }
+      .jump { fill:#13231b; stroke:#78d9ad; stroke-width:2; stroke-dasharray:8 7; }
+      .jump-text { fill:#9fe8c6; font:500 18px "Segoe UI",Arial,sans-serif; text-anchor:middle; }
+      .legend { fill:#9bada4; font:400 19px "Segoe UI",Arial,sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="3600" height="2220"/>
+  <text class="title" x="70" y="76">Business Eyes v1 Lite</text>
+  <text class="subtitle" x="70" y="112">BPMN-like product workflow · Telegram Mini App · AI daily reports · Stars wallet</text>
+
+  <!-- 1. ONBOARDING & ACCESS -->
+  <rect class="panel" x="50" y="140" width="3500" height="640" rx="26"/>
+  <text class="section-title" x="80" y="188">1 · ONBOARDING &amp; ACCESS CONTROL</text>
+  <rect class="lane-a" x="70" y="215" width="3460" height="135"/>
+  <rect class="lane-b" x="70" y="350" width="3460" height="135"/>
+  <rect class="lane-a" x="70" y="485" width="3460" height="135"/>
+  <rect class="lane-b" x="70" y="620" width="3460" height="135"/>
+  <line class="lane-line" x1="235" y1="215" x2="235" y2="755"/>
+  <line class="lane-line" x1="70" y1="350" x2="3530" y2="350"/>
+  <line class="lane-line" x1="70" y1="485" x2="3530" y2="485"/>
+  <line class="lane-line" x1="70" y1="620" x2="3530" y2="620"/>
+  <text class="lane-label" x="92" y="291">USER</text>
+  <text class="lane-label" x="92" y="426">BOT</text>
+  <text class="lane-label" x="92" y="561">MINI APP</text>
+  <text class="lane-label" x="92" y="696">BACKEND</text>
+
+  <circle class="event" cx="275" cy="282" r="30"/>
+  <text class="event-text" x="275" y="327">Start</text>
+  <rect class="task" x="330" y="247" width="190" height="70" rx="18"/>
+  <text class="task-text" x="425" y="290">Send /start</text>
+
+  <rect class="task" x="565" y="382" width="205" height="70" rx="18"/>
+  <text class="task-text" x="667" y="412"><tspan x="667">Register or update</tspan><tspan x="667" dy="26">Telegram user</tspan></text>
+
+  <rect class="task" x="815" y="647" width="230" height="82" rx="18"/>
+  <text class="task-text" x="930" y="680"><tspan x="930">Create account</tspan><tspan x="930" dy="27">Start 5-day trial</tspan></text>
+
+  <polygon class="gateway" points="1120,638 1180,688 1120,738 1060,688"/>
+  <text class="gateway-text" x="1120" y="681"><tspan x="1120">Access</tspan><tspan x="1120" dy="23">active?</tspan></text>
+
+  <rect class="task" x="1230" y="382" width="225" height="70" rx="18"/>
+  <text class="task-text" x="1342" y="412"><tspan x="1342">Send “Open Mini</tspan><tspan x="1342" dy="26">App” button</tspan></text>
+
+  <rect class="task" x="1500" y="247" width="190" height="70" rx="18"/>
+  <text class="task-text" x="1595" y="276"><tspan x="1595">Open the</tspan><tspan x="1595" dy="27">Mini App</tspan></text>
+
+  <rect class="task" x="1740" y="517" width="220" height="70" rx="18"/>
+  <text class="task-text" x="1850" y="547"><tspan x="1850">Receive Telegram</tspan><tspan x="1850" dy="26">initData</tspan></text>
+
+  <rect class="task" x="2005" y="652" width="205" height="70" rx="18"/>
+  <text class="task-text" x="2107" y="682"><tspan x="2107">Validate signed</tspan><tspan x="2107" dy="26">initData</tspan></text>
+
+  <polygon class="gateway" points="2290,637 2350,687 2290,737 2230,687"/>
+  <text class="gateway-text" x="2290" y="680"><tspan x="2290">Identity</tspan><tspan x="2290" dy="23">valid?</tspan></text>
+
+  <rect class="task" x="2410" y="647" width="220" height="82" rx="18"/>
+  <text class="task-text" x="2520" y="680"><tspan x="2520">Check trial and</tspan><tspan x="2520" dy="27">subscription in D1</tspan></text>
+
+  <polygon class="gateway" points="2720,638 2780,688 2720,738 2660,688"/>
+  <text class="gateway-text" x="2720" y="681"><tspan x="2720">Access</tspan><tspan x="2720" dy="23">active?</tspan></text>
+
+  <rect class="task-ai" x="2850" y="517" width="220" height="70" rx="18"/>
+  <text class="task-text" x="2960" y="547"><tspan x="2960">Load daily</tspan><tspan x="2960" dy="26">report form</tspan></text>
+
+  <rect class="jump" x="3135" y="242" width="305" height="80" rx="18"/>
+  <text class="jump-text" x="3287" y="274"><tspan x="3287">Continue to</tspan><tspan x="3287" dy="26">AI report generation ↓</tspan></text>
+
+  <path class="flow" d="M305 282 H330"/>
+  <path class="flow" d="M520 282 H540 V417 H565"/>
+  <path class="flow" d="M770 417 H790 V688 H815"/>
+  <path class="flow" d="M1045 688 H1060"/>
+  <path class="flow" d="M1180 688 H1205 V417 H1230"/>
+  <text class="flow-label" x="1190" y="664">Yes</text>
+  <path class="flow" d="M1455 417 H1475 V282 H1500"/>
+  <path class="flow" d="M1690 282 H1715 V552 H1740"/>
+  <path class="flow" d="M1960 552 H1982 V687 H2005"/>
+  <path class="flow" d="M2210 687 H2230"/>
+  <path class="flow" d="M2350 687 H2410"/>
+  <text class="flow-label" x="2364" y="670">Valid</text>
+  <path class="flow" d="M2630 688 H2660"/>
+  <path class="flow" d="M2780 688 H2815 V552 H2850"/>
+  <text class="flow-label" x="2792" y="665">Yes</text>
+  <path class="flow" d="M3070 552 H3100 V282 H3135"/>
+
+  <path class="flow-muted" d="M1120 738 V756 H3400 V1410"/>
+  <text class="flow-no" x="1142" y="755">No → Wallet &amp; subscription process</text>
+  <path class="flow-muted" d="M2290 637 V593 H2400"/>
+  <text class="flow-no" x="2310" y="582">Invalid → reopen from the bot</text>
+  <path class="flow-muted" d="M2720 738 V770 H3440 V1410"/>
+  <text class="flow-no" x="2740" y="758">No → Payment required</text>
+
+  <!-- 2. AI REPORT GENERATION -->
+  <rect class="panel" x="50" y="820" width="3500" height="550" rx="26"/>
+  <text class="section-title" x="80" y="868">2 · AI REPORT GENERATION</text>
+  <rect class="lane-a" x="70" y="895" width="3460" height="110"/>
+  <rect class="lane-b" x="70" y="1005" width="3460" height="110"/>
+  <rect class="lane-a" x="70" y="1115" width="3460" height="110"/>
+  <rect class="lane-b" x="70" y="1225" width="3460" height="110"/>
+  <line class="lane-line" x1="235" y1="895" x2="235" y2="1335"/>
+  <line class="lane-line" x1="70" y1="1005" x2="3530" y2="1005"/>
+  <line class="lane-line" x1="70" y1="1115" x2="3530" y2="1115"/>
+  <line class="lane-line" x1="70" y1="1225" x2="3530" y2="1225"/>
+  <text class="lane-label" x="92" y="958">USER</text>
+  <text class="lane-label" x="92" y="1068">MINI APP</text>
+  <text class="lane-label" x="92" y="1178">BACKEND</text>
+  <text class="lane-label" x="92" y="1288">AI SERVICE</text>
+
+  <rect class="task" x="275" y="915" width="220" height="70" rx="18"/>
+  <text class="task-text" x="385" y="945"><tspan x="385">Enter daily</tspan><tspan x="385" dy="26">activities</tspan></text>
+  <rect class="task" x="550" y="915" width="225" height="70" rx="18"/>
+  <text class="task-text" x="662" y="945"><tspan x="662">Select report</tspan><tspan x="662" dy="26">style</tspan></text>
+  <rect class="task" x="830" y="1025" width="220" height="70" rx="18"/>
+  <text class="task-text" x="940" y="1055"><tspan x="940">Submit report</tspan><tspan x="940" dy="26">request</tspan></text>
+  <rect class="task" x="1105" y="1135" width="225" height="70" rx="18"/>
+  <text class="task-text" x="1217" y="1165"><tspan x="1217">Prepare Persian</tspan><tspan x="1217" dy="26">AI prompt</tspan></text>
+  <polygon class="gateway" points="1430,1120 1490,1170 1430,1220 1370,1170"/>
+  <text class="gateway-text" x="1430" y="1163"><tspan x="1430">AI model</tspan><tspan x="1430" dy="23">available?</tspan></text>
+  <rect class="service" x="1560" y="1245" width="235" height="70" rx="18"/>
+  <text class="service-text" x="1677" y="1275"><tspan x="1677">Hugging Face</tspan><tspan x="1677" dy="26">model inference</tspan></text>
+  <rect class="task" x="1560" y="1135" width="235" height="70" rx="18"/>
+  <text class="task-text" x="1677" y="1165"><tspan x="1677">Rule-based</tspan><tspan x="1677" dy="26">fallback</tspan></text>
+  <rect class="task-ai" x="1870" y="1130" width="260" height="80" rx="18"/>
+  <text class="task-text" x="2000" y="1161"><tspan x="2000">Standardize title,</tspan><tspan x="2000" dy="27">time, action &amp; result</tspan></text>
+  <rect class="task" x="2205" y="1025" width="225" height="70" rx="18"/>
+  <text class="task-text" x="2317" y="1055"><tspan x="2317">Render structured</tspan><tspan x="2317" dy="26">report</tspan></text>
+  <rect class="task" x="2505" y="915" width="220" height="70" rx="18"/>
+  <text class="task-text" x="2615" y="945"><tspan x="2615">Review and</tspan><tspan x="2615" dy="26">edit</tspan></text>
+  <rect class="task-ai" x="2800" y="915" width="230" height="70" rx="18"/>
+  <text class="task-text" x="2915" y="945"><tspan x="2915">Copy or share</tspan><tspan x="2915" dy="26">the report</tspan></text>
+  <circle class="end-event" cx="3125" cy="950" r="30"/>
+  <text class="event-text" x="3125" y="998">Report ready</text>
+
+  <path class="flow" d="M495 950 H550"/>
+  <path class="flow" d="M775 950 H805 V1060 H830"/>
+  <path class="flow" d="M1050 1060 H1080 V1170 H1105"/>
+  <path class="flow" d="M1330 1170 H1370"/>
+  <path class="flow" d="M1490 1170 H1560"/>
+  <text class="flow-no" x="1505" y="1155">No</text>
+  <path class="flow" d="M1430 1220 V1280 H1560"/>
+  <text class="flow-label" x="1450" y="1250">Yes</text>
+  <path class="flow" d="M1795 1280 H1830 V1170 H1870"/>
+  <path class="flow" d="M1795 1170 H1870"/>
+  <path class="flow" d="M2130 1170 H2170 V1060 H2205"/>
+  <path class="flow" d="M2430 1060 H2465 V950 H2505"/>
+  <path class="flow" d="M2725 950 H2800"/>
+  <path class="flow" d="M3030 950 H3095"/>
+
+  <!-- 3. WALLET & SUBSCRIPTION -->
+  <rect class="panel" x="50" y="1410" width="3500" height="700" rx="26"/>
+  <text class="section-title" x="80" y="1458">3 · TELEGRAM STARS WALLET &amp; SUBSCRIPTION</text>
+  <rect class="lane-a" x="70" y="1485" width="3460" height="140"/>
+  <rect class="lane-b" x="70" y="1625" width="3460" height="140"/>
+  <rect class="lane-a" x="70" y="1765" width="3460" height="140"/>
+  <rect class="lane-b" x="70" y="1905" width="3460" height="140"/>
+  <line class="lane-line" x1="235" y1="1485" x2="235" y2="2045"/>
+  <line class="lane-line" x1="70" y1="1625" x2="3530" y2="1625"/>
+  <line class="lane-line" x1="70" y1="1765" x2="3530" y2="1765"/>
+  <line class="lane-line" x1="70" y1="1905" x2="3530" y2="1905"/>
+  <text class="lane-label" x="92" y="1565">USER</text>
+  <text class="lane-label" x="92" y="1705">BOT</text>
+  <text class="lane-label" x="92" y="1845">BACKEND</text>
+  <text class="lane-label" x="92" y="1985">SERVICES</text>
+
+  <rect class="task-pay" x="275" y="1520" width="180" height="70" rx="18"/>
+  <text class="task-text" x="365" y="1563">Send /pay</text>
+  <rect class="task" x="505" y="1660" width="215" height="70" rx="18"/>
+  <text class="task-text" x="612" y="1690"><tspan x="612">Display wallet</tspan><tspan x="612" dy="26">and top-ups</tspan></text>
+  <rect class="task-pay" x="770" y="1520" width="210" height="70" rx="18"/>
+  <text class="task-text" x="875" y="1550"><tspan x="875">Select top-up</tspan><tspan x="875" dy="26">amount</tspan></text>
+  <rect class="task" x="1030" y="1660" width="205" height="70" rx="18"/>
+  <text class="task-text" x="1132" y="1690"><tspan x="1132">Create Stars</tspan><tspan x="1132" dy="26">invoice</tspan></text>
+  <rect class="service" x="1285" y="1940" width="205" height="70" rx="18"/>
+  <text class="service-text" x="1387" y="1983">Telegram Stars</text>
+  <rect class="task" x="1540" y="1660" width="220" height="70" rx="18"/>
+  <text class="task-text" x="1650" y="1690"><tspan x="1650">Validate</tspan><tspan x="1650" dy="26">pre-checkout</tspan></text>
+  <polygon class="gateway" points="1860,1645 1920,1695 1860,1745 1800,1695"/>
+  <text class="gateway-text" x="1860" y="1688"><tspan x="1860">Payment</tspan><tspan x="1860" dy="23">successful?</tspan></text>
+  <rect class="task-ai" x="1990" y="1800" width="235" height="80" rx="18"/>
+  <text class="task-text" x="2107" y="1831"><tspan x="2107">Complete transaction</tspan><tspan x="2107" dy="27">Credit wallet in D1</tspan></text>
+  <rect class="task" x="2280" y="1660" width="210" height="70" rx="18"/>
+  <text class="task-text" x="2385" y="1690"><tspan x="2385">Show updated</tspan><tspan x="2385" dy="26">balance</tspan></text>
+  <rect class="task-pay" x="2540" y="1520" width="215" height="70" rx="18"/>
+  <text class="task-text" x="2647" y="1550"><tspan x="2647">Select 30- or</tspan><tspan x="2647" dy="26">90-day plan</tspan></text>
+  <polygon class="gateway" points="2860,1785 2920,1835 2860,1885 2800,1835"/>
+  <text class="gateway-text" x="2860" y="1828"><tspan x="2860">Balance</tspan><tspan x="2860" dy="23">sufficient?</tspan></text>
+  <rect class="task-ai" x="2990" y="1795" width="235" height="80" rx="18"/>
+  <text class="task-text" x="3107" y="1826"><tspan x="3107">Debit wallet</tspan><tspan x="3107" dy="27">Activate plan</tspan></text>
+  <rect class="task-ai" x="3280" y="1660" width="200" height="70" rx="18"/>
+  <text class="task-text" x="3380" y="1690"><tspan x="3380">Confirm and</tspan><tspan x="3380" dy="26">open Mini App</tspan></text>
+
+  <path class="flow" d="M455 1555 H480 V1695 H505"/>
+  <path class="flow" d="M720 1695 H745 V1555 H770"/>
+  <path class="flow" d="M980 1555 H1005 V1695 H1030"/>
+  <path class="flow" d="M1235 1695 H1260 V1975 H1285"/>
+  <path class="flow" d="M1490 1975 H1515 V1695 H1540"/>
+  <path class="flow" d="M1760 1695 H1800"/>
+  <path class="flow" d="M1860 1745 V1840 H1990"/>
+  <text class="flow-label" x="1882" y="1782">Yes</text>
+  <path class="flow" d="M2225 1840 H2250 V1695 H2280"/>
+  <path class="flow" d="M2490 1695 H2515 V1555 H2540"/>
+  <path class="flow" d="M2755 1555 H2780 V1835 H2800"/>
+  <path class="flow" d="M2920 1835 H2990"/>
+  <text class="flow-label" x="2935" y="1818">Yes</text>
+  <path class="flow" d="M3225 1835 H3250 V1695 H3280"/>
+  <path class="flow-muted" d="M1860 1645 V1500 H875 V1520"/>
+  <text class="flow-no" x="1640" y="1490">No → retry or cancel</text>
+  <path class="flow-muted" d="M2860 1885 V2025 H612 V1730"/>
+  <text class="flow-no" x="2670" y="2012">No → top up again</text>
+
+  <!-- Legend -->
+  <circle class="event" cx="90" cy="2167" r="18"/>
+  <text class="legend" x="120" y="2174">Event</text>
+  <rect class="task" x="245" y="2145" width="65" height="42" rx="10"/>
+  <text class="legend" x="325" y="2174">Task</text>
+  <polygon class="gateway" points="445,2145 470,2166 445,2187 420,2166"/>
+  <text class="legend" x="488" y="2174">Decision gateway</text>
+  <rect class="service" x="690" y="2145" width="70" height="42" rx="10"/>
+  <text class="legend" x="778" y="2174">External service / data store</text>
+  <path class="flow" d="M1120 2166 H1190"/>
+  <text class="legend" x="1210" y="2174">Primary process flow</text>
+  <path class="flow-muted" d="M1490 2166 H1560"/>
+  <text class="legend" x="1580" y="2174">Exception or loop</text>
+  <text class="subtitle" x="3500" y="2174" text-anchor="end">Business Eyes v1 Lite · Product workflow</text>
+</svg>
