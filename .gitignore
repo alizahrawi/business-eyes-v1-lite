@@ -1,8 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
+**/node_modules/
+**/.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -11,12 +11,12 @@
 !.yarn/versions
 
 # testing
-/coverage
+**/coverage/
 
 # next.js
-/.next/
-/.vinext/
-/out/
+**/.next/
+**/.vinext/
+**/out/
 
 # misc
 .DS_Store
@@ -30,19 +30,19 @@ yarn-error.log*
 *.tsbuildinfo
 
 # env files (can opt-in for committing if needed)
-.env*
-!.env.example
-.dev.vars*
+**/.env*
+!**/.env.example
+**/.dev.vars*
 
 # vercel
 .vercel
 
 # typescript
 next-env.d.ts
-/dist/
-/.wrangler/
+**/dist/
+**/.wrangler/
 # Checkout-local execution profile and tool state; never publish them.
-/.sites-runtime/
+**/.sites-runtime/
 /.agents/
 /.codex/
 /outputs/

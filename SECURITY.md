@@ -16,7 +16,7 @@ If a secret may have been exposed, rotate it immediately before beginning the in
 - Keep `ALLOW_PREVIEW_MODE=false` in production.
 - Generate a random webhook secret containing at least 32 characters from Telegram's supported character set.
 - Configure the Telegram webhook with the same `secret_token` and limit `allowed_updates` to `message`, `callback_query`, and `pre_checkout_query`.
-- Apply every D1 migration, including `0002_security_hardening.sql`, before deploying the matching application version.
+- Apply every D1 migration, including `apps/daily-report-builder/drizzle/0002_security_hardening.sql`, before deploying the matching application version.
 - Keep `MAX_REPORTS_PER_MINUTE`, `MAX_REPORTS_PER_DAY`, and `HF_TIMEOUT_MS` within the documented bounds.
 - Never log raw Telegram `initData`, authorization headers, bot tokens, Hugging Face tokens, or complete payment objects.
 - Keep Cloudflare, Next.js, Vinext, and all direct dependencies updated.
