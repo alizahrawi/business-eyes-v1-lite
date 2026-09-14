@@ -38,3 +38,16 @@ export const walletTransactions = sqliteTable(
     uniqueIndex("idx_wallet_transactions_charge_id").on(table.telegramPaymentChargeId),
   ],
 );
+
+export const apiRateLimits = sqliteTable(
+  "api_rate_limits",
+  {
+    key: text("key").primaryKey(),
+    telegramUserId: text("telegram_user_id").notNull(),
+    scope: text("scope").notNull(),
+    windowStartedAt: integer("window_started_at").notNull(),
+    requestCount: integer("request_count").notNull().default(1),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [index("idx_api_rate_limits_updated_at").on(table.updatedAt)],
+);

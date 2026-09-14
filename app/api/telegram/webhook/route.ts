@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { getD1 } from "@/db";
+import { noStoreJson, readJsonBody, RequestValidationError } from "@/lib/request-security";
 import { telegramApi } from "@/lib/telegram-api";
 
 type RuntimeEnv = {
@@ -46,6 +47,24 @@ const TRIAL_SECONDS = 5 * 24 * 60 * 60;
 const TOP_UP_AMOUNTS = [50, 100, 250, 500];
 const MIN_TOP_UP = 10;
 const MAX_TOP_UP = 2500;
+const MAX_WEBHOOK_BYTES = 256 * 1024;
+const DEFAULT_APP_URL = "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site";
+
+function validWebhookSecret(value: string) {
+  return /^[A-Za-z0-9_-]{32,256}$/.test(value);
+}
+
+function validTelegramPerson(person: TelegramPerson) {
+  return Number.isSafeInteger(person.id) && person.id > 0
+    && (person.first_name === undefined || (typeof person.first_name === "string" && person.first_name.length <= 128))
+    && (person.username === undefined || (typeof person.username === "string" && /^[A-Za-z0-9_]{1,64}$/.test(person.username)));
+}
+
+function miniAppUrl(runtime: RuntimeEnv) {
+  const url = new URL(runtime.APP_URL || DEFAULT_APP_URL);
+  if (url.protocol !== "https:") throw new Error("APP_URL must use HTTPS");
+  return url.toString();
+}
 
 function sameSecret(actual: string, expected: string) {
   if (actual.length !== expected.length) return false;
@@ -80,6 +99,7 @@ function formatDate(timestamp: number) {
 }
 
 async function ensureUser(person: TelegramPerson) {
+  if (!validTelegramPerson(person)) throw new Error("Invalid Telegram user");
   const db = getD1();
   const now = Math.floor(Date.now() / 1000);
   await db
@@ -97,8 +117,8 @@ async function ensureUser(person: TelegramPerson) {
     )
     .bind(
       String(person.id),
-      person.first_name || "",
-      person.username || null,
+      person.first_name?.slice(0, 128) || "",
+      person.username?.slice(0, 64) || null,
       now,
       now + TRIAL_SECONDS,
       now,
@@ -229,7 +249,7 @@ async function buyPlan(botToken: string, runtime: RuntimeEnv, chatId: number, us
   await telegramApi(botToken, "sendMessage", {
     chat_id: chatId,
     text: `✅ پلن ${plan === "monthly" ? "یک‌ماهه" : "سه‌ماهه"} فعال شد.\nدسترسی تا ${formatDate(account.subscriptionEndsAt)}\nموجودی: ${formatNumber(Number(account.balance))} اعتبار`,
-    reply_markup: { inline_keyboard: [[{ text: "✍️ ورود به Business Eyes", web_app: { url: runtime.APP_URL || "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site" } }]] },
+    reply_markup: { inline_keyboard: [[{ text: "✍️ ورود به Business Eyes", web_app: { url: miniAppUrl(runtime) } }]] },
   });
 }
 
@@ -237,12 +257,15 @@ export async function POST(request: Request) {
   const runtime = env as unknown as RuntimeEnv;
   const botToken = runtime.TELEGRAM_BOT_TOKEN;
   const webhookSecret = runtime.TELEGRAM_WEBHOOK_SECRET;
-  if (!botToken || !webhookSecret) return new Response("Not configured", { status: 503 });
+  if (!botToken || !webhookSecret || !validWebhookSecret(webhookSecret)) return new Response("Not configured", { status: 503 });
   const suppliedSecret = request.headers.get("x-telegram-bot-api-secret-token") || "";
   if (!sameSecret(suppliedSecret, webhookSecret)) return new Response("Unauthorized", { status: 401 });
 
   try {
-    const update = (await request.json()) as TelegramUpdate;
+    const update = await readJsonBody<TelegramUpdate>(request, MAX_WEBHOOK_BYTES);
+    if (!Number.isSafeInteger(update.update_id) || update.update_id < 0) return noStoreJson({ error: "Invalid update" }, 400);
+    const people = [update.pre_checkout_query?.from, update.callback_query?.from, update.message?.from].filter(Boolean) as TelegramPerson[];
+    if (people.some((person) => !validTelegramPerson(person))) return noStoreJson({ error: "Invalid Telegram user" }, 400);
     const db = getD1();
 
     if (update.pre_checkout_query) {
@@ -337,7 +360,7 @@ export async function POST(request: Request) {
         chat_id: message.chat.id,
         text: `سلام ${sender.first_name || ""} 👋\n${accessText(account)}\n\nکارهای امروزت را بنویس و یک گزارش کوتاه و آماده تحویل بگیر.`,
         reply_markup: active
-          ? { inline_keyboard: [[{ text: "✍️ ورود به Business Eyes", web_app: { url: runtime.APP_URL || "https://rooznegar-daily-report.zahrawi-biz.chatgpt.site" } }], [{ text: "⭐ کیف پول و اشتراک", callback_data: "wallet:show" }]] }
+          ? { inline_keyboard: [[{ text: "✍️ ورود به Business Eyes", web_app: { url: miniAppUrl(runtime) } }], [{ text: "⭐ کیف پول و اشتراک", callback_data: "wallet:show" }]] }
           : { inline_keyboard: [[{ text: "⭐ شارژ کیف پول و تمدید", callback_data: "wallet:show" }]] },
       });
       return Response.json({ ok: true });
@@ -376,7 +399,8 @@ export async function POST(request: Request) {
 
     return Response.json({ ok: true });
   } catch (error) {
-    console.error("Telegram webhook failed", error);
+    if (error instanceof RequestValidationError) return noStoreJson({ error: "Invalid request" }, error.status);
+    console.error("Telegram webhook failed", error instanceof Error ? error.message : "Unknown error");
     return new Response("Webhook processing failed", { status: 500 });
   }
 }
