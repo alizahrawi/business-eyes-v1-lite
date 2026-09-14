@@ -2,12 +2,25 @@
 
 > An AI-powered Telegram Mini App that turns informal Persian daily activities into concise, structured, manager-ready work reports.
 
+This repository is structured as the foundation of the broader **Business Eyes** product family. The current release contains one production application—**Daily Report Builder**—while keeping clear boundaries for future Business Eyes applications, shared packages, and product research.
+
 [![Telegram Mini App](https://img.shields.io/badge/Telegram-Mini%20App-229ED9?logo=telegram&logoColor=white)](https://core.telegram.org/bots/webapps)
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Serverless-F38020?logo=cloudflare&logoColor=white)](https://www.cloudflare.com/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-AI-FFD21E)](https://huggingface.co/)
 [![Status](https://img.shields.io/badge/version-v1%20Lite-76d5aa)](#project-status)
 
 **Live Mini App:** [Business Eyes v1 Lite](https://rooznegar-daily-report.zahrawi-biz.chatgpt.site/)
+
+## Business Eyes product family
+
+| Product area | Module | Status | Purpose |
+| --- | --- | --- | --- |
+| Work reporting | [`Daily Report Builder`](apps/daily-report-builder/README.md) | Active — v1 Lite | Converts natural Persian activity notes into structured daily reports |
+| Management intelligence | Analytics and insights | Planned | Turns structured work data into decision-ready insights |
+| Team operations | Workflow intelligence | Planned | Helps teams standardize execution and reporting workflows |
+| Ecosystem | Integrations | Planned | Connects Business Eyes with task-management and business tools |
+
+Future modules will be added as separate applications under `apps/` instead of being mixed into the Daily Report Builder codebase. See the [product vision](docs/product/vision.md) and [product map](docs/product/product-map.md).
 
 ## Why I built Business Eyes
 
@@ -71,9 +84,9 @@ Business Eyes reduces that friction by letting users write naturally while the s
 
 ## Product workflow
 
-![Business Eyes v1 Lite BPMN-like workflow](docs/architecture/business-eyes-workflow.png)
+![Business Eyes v1 Lite BPMN-like workflow](docs/architecture/daily-report-builder/business-eyes-workflow.png)
 
-The editable workflow sources are available in [`docs/architecture`](docs/architecture/README.md).
+The editable workflow sources are available in [`docs/architecture/daily-report-builder`](docs/architecture/daily-report-builder/README.md).
 
 ## Main features
 
@@ -141,38 +154,28 @@ business-eyes-v1-lite/
 ├── .github/
 │   ├── dependabot.yml                # Weekly dependency update configuration
 │   └── workflows/security.yml        # Audit, test, lint and build checks
-├── app/
-│   ├── api/
-│   │   ├── generate/
-│   │   │   └── route.ts              # Authentication, access check and AI report generation
-│   │   └── telegram/
-│   │       └── webhook/
-│   │           └── route.ts          # Bot commands, Stars payments, wallet and subscriptions
-│   ├── globals.css                   # Business Eyes visual design system
-│   ├── layout.tsx                    # Application metadata and Telegram Web App script
-│   └── page.tsx                      # Persian report-builder interface
-├── components/
-│   └── ui/                           # Reusable interface components
-├── db/
-│   ├── index.ts                      # Cloudflare D1 connection helpers
-│   └── schema.ts                     # Users, bot sessions and wallet transaction models
+├── apps/
+│   └── daily-report-builder/         # Current Telegram Mini App product
+│       ├── app/                      # UI and serverless API routes
+│       ├── components/               # Reusable application UI
+│       ├── db/                       # D1 connection and schema
+│       ├── drizzle/                  # Versioned database migrations
+│       ├── lib/                      # Telegram auth, API and request security
+│       ├── public/                   # Product branding and static assets
+│       ├── scripts/                  # Build and runtime helpers
+│       ├── tests/                    # Security and behavior tests
+│       ├── .env.example              # Application runtime configuration
+│       ├── package.json              # Application dependencies and scripts
+│       └── README.md                 # Application-level technical documentation
 ├── docs/
-│   └── architecture/
-│       ├── README.md                 # Workflow documentation and usage
-│       ├── business-eyes-workflow.mmd
-│       ├── business-eyes-workflow.png
-│       └── business-eyes-workflow.svg
-├── drizzle/                          # Versioned D1 migrations
-├── lib/
-│   ├── telegram-api.ts               # Typed Telegram Bot API client
-│   ├── telegram-auth.ts              # Telegram initData HMAC verification
-│   └── utils.ts                      # Shared utilities
-├── public/                            # Brand and static assets
-├── scripts/                           # Portable build and deployment helpers
-├── tests/
-│   └── security.test.mjs             # Authentication and request-hardening tests
-├── .env.example                       # Required runtime configuration
-├── package.json
+│   ├── architecture/
+│   │   └── daily-report-builder/     # BPMN, PNG and SVG workflow sources
+│   └── product/
+│       ├── origin-story.md           # Why Business Eyes was created
+│       ├── product-map.md             # Product taxonomy and module boundaries
+│       └── vision.md                  # Long-term product direction
+├── package.json                       # Monorepo workspace commands
+├── package-lock.json                  # Reproducible dependency lock
 ├── SECURITY.md                        # Production security and incident-response policy
 └── README.md
 ```
@@ -194,7 +197,7 @@ cd business-eyes-v1-lite
 npm ci
 ```
 
-Create your local environment file from `.env.example` and configure the values below:
+Create the application environment file from `apps/daily-report-builder/.env.example` and configure the values below:
 
 ```env
 TELEGRAM_BOT_TOKEN=
