@@ -95,7 +95,7 @@ export default function Home() {
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const dateLabel = useMemo(todayInPersian, []);
+  const dateLabel = useMemo(() => todayInPersian(), []);
 
   useEffect(() => {
     let attempts = 0;

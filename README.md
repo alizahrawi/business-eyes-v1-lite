@@ -138,6 +138,9 @@ Telegram User
 
 ```text
 business-eyes-v1-lite/
+├── .github/
+│   ├── dependabot.yml                # Weekly dependency update configuration
+│   └── workflows/security.yml        # Audit, test, lint and build checks
 ├── app/
 │   ├── api/
 │   │   ├── generate/
@@ -166,8 +169,11 @@ business-eyes-v1-lite/
 │   └── utils.ts                      # Shared utilities
 ├── public/                            # Brand and static assets
 ├── scripts/                           # Portable build and deployment helpers
+├── tests/
+│   └── security.test.mjs             # Authentication and request-hardening tests
 ├── .env.example                       # Required runtime configuration
 ├── package.json
+├── SECURITY.md                        # Production security and incident-response policy
 └── README.md
 ```
 
@@ -198,6 +204,10 @@ MONTHLY_PRICE_CREDITS=
 QUARTERLY_PRICE_CREDITS=
 HF_TOKEN=
 HF_MODEL=Qwen/Qwen2.5-7B-Instruct-1M:fastest
+ALLOW_PREVIEW_MODE=false
+MAX_REPORTS_PER_MINUTE=6
+MAX_REPORTS_PER_DAY=100
+HF_TIMEOUT_MS=25000
 ```
 
 Never commit bot tokens, webhook secrets, or Hugging Face tokens.
@@ -212,6 +222,7 @@ npm run dev
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
 
@@ -251,12 +262,22 @@ Apply the versioned SQL migrations to the configured D1 database before enabling
 
 ## Security
 
+See the complete [Security Policy and production checklist](SECURITY.md).
+
 - Telegram Mini App `initData` is verified using HMAC-SHA256.
 - Authentication payloads older than one hour are rejected.
 - Telegram webhook requests require a secret-token header.
+- Webhook secrets must contain 32–256 allowed characters.
 - Pre-checkout requests are matched against pending wallet transactions.
 - Completed payments are processed idempotently.
 - Secrets remain in runtime environment variables and are not stored in the repository.
+- `.env`, `.env.local`, and `.dev.vars` secret files are excluded from Git.
+- Production preview mode is disabled by default, so a missing bot token does not create a public unauthenticated API.
+- JSON request bodies have strict content-type and size limits.
+- Authenticated report generation is rate-limited per Telegram user and returns `429` when exceeded.
+- Hugging Face requests have a bounded timeout to prevent resource exhaustion.
+- Responses containing reports or authentication errors use `Cache-Control: no-store`.
+- Security headers restrict framing to Telegram and disable unnecessary browser capabilities.
 - AI output is instructed not to invent time, results, names, numbers, or missing details.
 
 ## Project status
